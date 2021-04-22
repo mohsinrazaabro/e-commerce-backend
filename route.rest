@@ -1,0 +1,37 @@
+POST http://localhost:5000/cart/post
+Content-Type: application/json
+
+{
+    "items": [
+        {"productId":"2", 
+        "qty": "3"},
+        {"productId":"1", 
+        "qty": "6"}
+
+        
+    ]
+}
+
+###
+
+
+GET http://localhost:5000/products
+Content-Type: application/json
+
+{
+    
+}
+###
+
+POST http://localhost:5000/products
+Content-Type: application/json
+
+{
+    "productCode": 3,
+    "title": "Baseball Bat",
+    "price": 400,
+    "supplier": "EA",
+    "category": "Sports",
+    "stockLeft": 10,
+    "stars": 4
+}
