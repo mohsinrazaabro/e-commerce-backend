@@ -19,7 +19,7 @@ db.on("error", (error) => {
 db.once("open", () => {
   console.log("Database is connected !");
 });
-
+app.use(express.static("public"));
 app.use(express.json());
 
 const productRoutes = require("./api/routes/products");
