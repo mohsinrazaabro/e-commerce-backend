@@ -31,6 +31,9 @@ app.use("/order", orderRoutes);
 const userRoutes = require("./api/routes/user");
 app.use("/user", userRoutes);
 
+const homeRoutes = require("./api/routes/home");
+app.use("/home", homeRoutes);
+
 const port = process.env.PORT;
 app.listen(port, () => {
   console.log(`server started at http://localhost:${port}`);

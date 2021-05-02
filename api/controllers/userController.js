@@ -2,22 +2,43 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../models/user");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
+const nodemailer = require("nodemailer");
+const productModel = require("../models/product");
 
 const addUser = async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const email = await userModel.find({ email: req.body.email });
     const username = await userModel.find({ username: req.body.username });
-
+    let role = "user";
+    if (req.body.role === process.env.ADMIN_REGISTRATION_KEY) role = "admin";
     if (email.length == 0 && username.length == 0) {
-      const newUser = new user({
-        username: req.body.username,
-        email: req.body.email,
-        password: hashedPassword,
-        role: req.body.role,
-      });
-      newUser.save();
-      res.json({ msg: "Success" });
+      userModel.create(
+        {
+          username: req.body.username,
+          email: req.body.email,
+          password: hashedPassword,
+          role,
+        },
+        (err, doc) => {
+          console.log(doc._id);
+          const token = jwt.sign(
+            { name: doc._id },
+            process.env.SECRET_JWT_KEY,
+            {
+              expiresIn: "24h",
+            }
+          );
+          sendEmail(req.body.email, token, "http://localhost:5000");
+          res.json({
+            msg:
+              "Click on the link sent to your email to fonfirm your account s",
+          });
+        }
+      );
+      /* newUser.save();
+      const user = await userModel.findOne({ email: req.body.email });
+       */
     } else {
       res.json({ msg: "User already exists!" });
     }
@@ -27,7 +48,7 @@ const addUser = async (req, res) => {
 };
 
 const makeToken = async (req, res) => {
-  const User = await user.findOne({ email: req.body.email });
+  const User = await userModel.findOne({ email: req.body.email });
 
   if (User === null) {
     return res.json({ msg: "failure, user not found", success: false });
@@ -50,23 +71,63 @@ const makeToken = async (req, res) => {
   }
 };
 
+function sendEmail(reciever, token, baseURL) {
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
+
+  var mailOptions = {
+    from: process.env.EMAIL,
+    to: reciever,
+    subject: "Confirm your account for E Commerce",
+    html: `<h1>Clickeck the link below to confirm your account</h1><p>Link:</p><a href='${baseURL}/user/confirm/${token}' > ${baseURL}/user/confirm/${token}</a>`,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+}
+
+const confirmAccount = (req, res) => {
+  const token = req.params.token;
+  jwt.verify(token, process.env.SECRET_JWT_KEY, (err, tokenData) => {
+    userModel.updateOne(
+      { _id: tokenData.name },
+      { isconfirmed: true },
+      (err, doc) => {
+        console.log(doc);
+        res.send("Succesfully confirmed!");
+      }
+    );
+  });
+};
+
 const checkToken = async (req, res) => {
-  const count = await feedModel.countDocuments();
   const bearerHeaders = req.headers["authorization"];
   if (bearerHeaders !== "undefined") {
     const bearerToken = bearerHeaders.split(" ")[1];
     jwt.verify(bearerToken, process.env.SECRET_JWT_KEY, (err, authData) => {
-      if (err) return res.json({ msg: "invalid token", count: count });
+      if (err) return res.json({ msg: "invalid token", success: false });
       req.authData = authData;
-      user.findOne({ username: req.authData.name }, (err, doc) => {
+      userModel.findOne({ username: req.authData.name }, (err, doc) => {
         if (err) {
           return;
         }
         res.json({
           msg: `valid token`,
-          name: req.authData.name,
-          count: count,
+          username: req.authData.name,
+          confirmed: doc.isconfirmed,
           role: doc.role,
+          success: true,
+          userid: doc._id,
         });
       });
     });
@@ -90,7 +151,7 @@ const deleteUser = (req, res) => {
   if (!req.body.id) {
     return;
   }
-  user.findOneAndDelete({ _id: req.body.id }, function (err, docs) {
+  userModel.findOneAndDelete({ _id: req.body.id }, function (err, docs) {
     if (err) {
       return;
     } else {
@@ -100,10 +161,29 @@ const deleteUser = (req, res) => {
   });
 };
 
+const profile = async (req, res) => {
+  const products = await productModel.find({ supplier: req.authData.name });
+  userModel.findOne({ username: req.authData.name }, (err, doc) => {
+    if (err) return res.json({ msg: "Not found", success: false });
+    const newUser = {
+      username: doc.username,
+      email: doc.email,
+      address: doc.address,
+      phone: doc.phone,
+      isconfirmed: doc.isconfirmed,
+    };
+    console.log(newUser);
+
+    res.json({ user: newUser, products, success: true, msg: "user found" });
+  });
+};
+
 module.exports = {
   addUser,
   makeToken,
   checkToken,
   getUsers,
   deleteUser,
+  confirmAccount,
+  profile,
 };

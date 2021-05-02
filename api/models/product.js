@@ -13,12 +13,21 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  imagePath: {
+  discount: {
+    type: mongoose.Schema.Types.Decimal128,
+    required: true,
+    default: 1,
+  },
+  imagelink: {
     type: String,
   },
   supplier: {
     type: String,
     required: true,
+  },
+  description: {
+    type: String,
+    required: false,
   },
   category: {
     type: String,

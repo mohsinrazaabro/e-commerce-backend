@@ -27,11 +27,26 @@ POST http://localhost:5000/products
 Content-Type: application/json
 
 {
-    "productCode": 3,
-    "title": "Baseball Bat",
-    "price": 400,
-    "supplier": "EA",
+    "productCode": 4,
+    "title": "Mustang GT5000",
+    "price": 500,
+    "supplier": "Dinky",
     "category": "Sports",
     "stockLeft": 10,
     "stars": 4
 }
+
+###
+
+POST http://localhost:5000/user/create
+Content-Type: application/json
+
+{
+    "username": "freddy",
+    "email": "frddbrn@gmail.com",
+    "password": "password"
+}
+
+###
+
+POST http://localhost:5000/user/confirm/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiNjA4MjljNjQyZDE2MjIxOTk0Y2IxYjM2IiwiaWF0IjoxNjE5MTcyNDUyLCJleHAiOjE2MTkyNTg4NTJ9.xI9U26BR4FUFWWVwgKrvzYVFtmefrCBqPw5cqPL20MM

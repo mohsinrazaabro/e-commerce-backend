@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  password: {
+    type: String,
+    required: true,
+  },
   phone: {
     type: String,
     required: false,
@@ -16,9 +20,14 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     required: true,
+    default: "user",
   },
   address: {
     type: String,
+  },
+  isconfirmed: {
+    type: Boolean,
+    default: false,
   },
 });
 
