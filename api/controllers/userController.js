@@ -29,7 +29,11 @@ const addUser = async (req, res) => {
               expiresIn: "24h",
             }
           );
-          sendEmail(req.body.email, token, "http://localhost:5000");
+          sendEmail(
+            req.body.email,
+            token,
+            "http://e-commerce-mra.herokuapp.com"
+          );
           res.json({
             msg:
               "Click on the link sent to your email to fonfirm your account s",
