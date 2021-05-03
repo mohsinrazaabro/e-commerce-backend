@@ -33,6 +33,7 @@ const addUser = async (req, res) => {
           res.json({
             msg:
               "Click on the link sent to your email to fonfirm your account s",
+            email: doc.email,
           });
         }
       );
@@ -47,18 +48,13 @@ const addUser = async (req, res) => {
   }
 };
 const resendEmail = async (req, res) => {
-  const doc = await userModel.find({ username: req.authData.name });
+  const doc = await userModel.findOne({ username: req.authData.name });
   const token = jwt.sign({ name: doc._id }, process.env.SECRET_JWT_KEY, {
     expiresIn: "24h",
   });
-  const emailResponse = await sendEmail(
-    doc.email,
-    token,
-    "http://e-commerce-mra.herokuapp.com"
-  );
+  sendEmail(doc.email, token, "http://e-commerce-mra.herokuapp.com");
   res.json({
     msg: "Click on the link sent to your email to fonfirm your account s",
-    secondmsg: { doc, emailResponse },
   });
 };
 
@@ -104,10 +100,9 @@ function sendEmail(reciever, token, baseURL) {
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      return error;
+      console.log(error);
     } else {
       console.log("Email sent: " + info.response);
-      return info.response;
     }
   });
 }
