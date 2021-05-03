@@ -50,6 +50,16 @@ const addUser = async (req, res) => {
     console.error(err);
   }
 };
+const resendEmail = async (req, res) => {
+  const doc = await userModel.find({ username: req.authData.name });
+  const token = jwt.sign({ name: doc._id }, process.env.SECRET_JWT_KEY, {
+    expiresIn: "24h",
+  });
+  sendEmail(req.body.email, token, "http://e-commerce-mra.herokuapp.com");
+  res.json({
+    msg: "Click on the link sent to your email to fonfirm your account s",
+  });
+};
 
 const makeToken = async (req, res) => {
   const User = await userModel.findOne({ email: req.body.email });
@@ -190,4 +200,5 @@ module.exports = {
   deleteUser,
   confirmAccount,
   profile,
+  resendEmail,
 };
