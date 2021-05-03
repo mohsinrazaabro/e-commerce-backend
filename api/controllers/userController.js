@@ -55,6 +55,7 @@ const resendEmail = async (req, res) => {
   sendEmail(doc.email, token, "http://e-commerce-mra.herokuapp.com");
   res.json({
     msg: "Click on the link sent to your email to fonfirm your account s",
+    email: doc.email,
   });
 };
 
