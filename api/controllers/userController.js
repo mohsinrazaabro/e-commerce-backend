@@ -51,9 +51,14 @@ const resendEmail = async (req, res) => {
   const token = jwt.sign({ name: doc._id }, process.env.SECRET_JWT_KEY, {
     expiresIn: "24h",
   });
-  sendEmail(doc.email, token, "http://e-commerce-mra.herokuapp.com");
+  const emailResponse = await sendEmail(
+    doc.email,
+    token,
+    "http://e-commerce-mra.herokuapp.com"
+  );
   res.json({
     msg: "Click on the link sent to your email to fonfirm your account s",
+    secondmsg: { doc, emailResponse },
   });
 };
 
@@ -99,10 +104,10 @@ function sendEmail(reciever, token, baseURL) {
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      res.json({ error, success: false, msg: "failed" });
+      return error;
     } else {
-      res.json({ response: info.response });
       console.log("Email sent: " + info.response);
+      return info.response;
     }
   });
 }
