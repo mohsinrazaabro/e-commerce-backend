@@ -103,8 +103,9 @@ function sendEmail(reciever, token, baseURL) {
 
   transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
-      console.log(error);
+      res.json({ error, success: false, msg: "failed" });
     } else {
+      res.json({ response: info.response });
       console.log("Email sent: " + info.response);
     }
   });
