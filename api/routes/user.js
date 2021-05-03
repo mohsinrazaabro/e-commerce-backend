@@ -12,6 +12,6 @@ router.get("/checktoken", userController.checkToken);
 router.post("/deleteuser", verifyAdmin, userController.deleteUser);
 router.get("/confirm/:token", userController.confirmAccount);
 router.get("/profile/:id", verifyToken, userController.profile);
-router.get("/resendemail", userController.resendEmail);
+router.get("/resendemail", verifyToken, userController.resendEmail);
 
 module.exports = router;
