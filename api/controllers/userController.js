@@ -29,11 +29,7 @@ const addUser = async (req, res) => {
               expiresIn: "24h",
             }
           );
-          sendEmail(
-            req.body.email,
-            token,
-            "http://e-commerce-mra.herokuapp.com"
-          );
+          sendEmail(doc.email, token, "http://e-commerce-mra.herokuapp.com");
           res.json({
             msg:
               "Click on the link sent to your email to fonfirm your account s",
@@ -55,7 +51,7 @@ const resendEmail = async (req, res) => {
   const token = jwt.sign({ name: doc._id }, process.env.SECRET_JWT_KEY, {
     expiresIn: "24h",
   });
-  sendEmail(req.body.email, token, "http://e-commerce-mra.herokuapp.com");
+  sendEmail(doc.email, token, "http://e-commerce-mra.herokuapp.com");
   res.json({
     msg: "Click on the link sent to your email to fonfirm your account s",
   });
