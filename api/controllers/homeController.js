@@ -24,7 +24,6 @@ const addFeatured = (req, res) => {
       price: req.body.price,
       originalprice: req.body.originalprice,
       imagelink: req.body.imagelink,
-      supplier: req.body.supplier,
       stars: req.body.stars,
     },
     (err, doc) => {

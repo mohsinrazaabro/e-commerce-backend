@@ -20,10 +20,6 @@ const featuredSchema = new mongoose.Schema({
   imagelink: {
     type: String,
   },
-  supplier: {
-    type: String,
-    required: true,
-  },
   stars: {
     type: mongoose.Schema.Types.Decimal128,
   },
